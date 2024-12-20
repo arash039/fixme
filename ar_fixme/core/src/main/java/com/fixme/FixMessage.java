@@ -1,6 +1,6 @@
 package com.fixme;
 
-import java.lang.reflect.Array;
+//import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,12 +56,12 @@ public class FixMessage {
 					_tag = _tag + (char)this.rawMessage[i];
 					i++;
 				}
-			}
-			if (this.rawMessage[i] == '=') {
-				i++;
-				while (this.rawMessage[i] != 1) {
-					_value = _value + (char)this.rawMessage[i];
+				if (this.rawMessage[i] == '=') {
 					i++;
+					while (this.rawMessage[i] != 1) {
+						_value = _value + (char)this.rawMessage[i];
+						i++;
+					}
 				}
 			}
 			tags.add(_tag);
@@ -69,17 +69,22 @@ public class FixMessage {
 			if (i < len)
 				i++;
 		}
+		//System.out.println("bytes parsed");
 	}
+
 
 	void parseLists() {
 		try {
 			if ((tags.size() == 0 || values.size() == 0) || tags.size() != values.size())
-				throw new FixFormatException("Error! One or more tag value pairs are missing.");
-			if (!tags.get(0).equals(49))
+				throw new FixFormatException("Error!!! One or more tag value pairs are missing.");
+			if (!tags.get(0).equals("49"))
 				throw new FixFormatException("Error! FIX message must start with the internal sender ID.");
 			for (int i = 0; i < tags.size(); i++) {
-				if (tags.get(i).isEmpty() || values.get(i).isEmpty())
+				//System.out.println(tags.get(i) +"-----" + values.get(i));
+				if (tags.get(i).isEmpty() || values.get(i).isEmpty()) {
+					System.out.println(tags.get(i) + " --- " + values.get(i));
 					throw new FixFormatException("Error! One or more tag value pairs are missing.");
+				}
 				if (!messagMap.containsKey(tags.get(i)))
 					messagMap.put(tags.get(i), values.get(i));
 				else
@@ -88,15 +93,19 @@ public class FixMessage {
 		} catch (FixFormatException e) {
 				System.err.println(e);
 		}
+		//System.out.println("list parsed");
 	}
 
 	void checkMessageMap() {
 		try {
-			if (messagMap.get("56") == null)
-			throw new FixMessageException("Error! FIX message must contain an internal target ID.");
+			if (messagMap.get("56") == null) {
+				System.out.println("ERROR");
+				throw new FixMessageException("Error! FIX message must contain an internal target ID.");
+			}
 		} catch (Exception e) {
 			System.err.println(e);
 		}
+		//System.out.println("map checked");
 	}
 
 	public static String makeChecksum(byte[] message) {
@@ -105,6 +114,7 @@ public class FixMessage {
 		for (int i = 0; i < message.length; i++)
 			bytesSum += message[i];
 		String checksum = Integer.toString(bytesSum % 256);
+		//System.out.println("calculated checksum is: " + checksum);
 		switch (checksum.length()) { // for consitency make checksum 3 digits
 			case 1:
 				checksum = "00" + checksum;
@@ -121,7 +131,7 @@ public class FixMessage {
 	void appendChecksum() {
 		this.stringMessage = this.stringMessage + "10" + "=" + makeChecksum(this.rawMessage) + '|';
 		byte[] temp = new byte[rawMessage.length + 7];
-		byte[] tag = ("10" + "|").getBytes();
+		byte[] tag = ("10" + "=").getBytes();
 		byte[] checksumBytes = makeChecksum(this.rawMessage).getBytes();
 
 		System.arraycopy(rawMessage, 0, temp, 0, rawMessage.length);
@@ -130,6 +140,7 @@ public class FixMessage {
 		temp[temp.length - 1] = 1;
 
 		this.rawMessage = temp;
+		//System.out.println("checksum added: " + stringMessage);
 	}
 
 }
