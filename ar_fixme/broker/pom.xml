@@ -24,11 +24,6 @@
             <artifactId>core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-		<dependency>
-			<groupId>org.jline</groupId>
-			<artifactId>jline</artifactId>
-			<version>3.22.0</version> <!-- Use the latest version -->
-		</dependency>
     </dependencies>
 
     <build>

@@ -1,0 +1,13 @@
+docker exec -it mysql-container mysql -u root -p
+
+CREATE DATABASE FixRouter;
+USE FixRouter;
+
+CREATE TABLE Transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    senderId VARCHAR(50),
+    targetId VARCHAR(50),
+    message TEXT,
+    clientOrderId VARCHAR(50),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -9,6 +9,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -27,6 +31,9 @@ public class Router {
 	private static HashMap<String, ClientAttachment> markets;
 	private MessageHandler firstHandler = new FirstHandler();
 	private MessageHandler secondHandler = new SecondHandler();
+	// private static final String DB_URL = "jdbc:mysql://localhost:3306/FixRouter";
+	// private static final String DB_USER = "root"; 
+	// private static final String DB_PASSWORD = "rootpassword";
 
 	public Router() {
 		bufferReader = new BufferedReader(new InputStreamReader(System.in));
@@ -38,6 +45,22 @@ public class Router {
 		firstHandler.setNext(secondHandler);
 		secondHandler.setNext(null);
 	}
+
+	// private void saveTransaction(String senderId, String targetId, String message, String clientOrderId) {
+	// 	try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)){
+	// 		String sql = "INSERT INTO Transactions (senderId, targetId, message, clientOrderId) VALUES (?, ?, ?, ?)";
+	// 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+    //             preparedStatement.setString(1, senderId);
+    //             preparedStatement.setString(2, targetId);
+    //             preparedStatement.setString(3, message);
+    //             preparedStatement.setString(4, clientOrderId);
+    //             preparedStatement.executeUpdate();
+    //             System.out.println("Transaction saved to database.");
+    //         }
+	// 	} catch (SQLException e) {
+	// 		System.err.println("Error saving transaction: " + e.getMessage());
+	// 	}
+	// }
 
 	abstract class MessageHandler {
 		MessageHandler next;
@@ -309,6 +332,8 @@ public class Router {
 		@Override
 		public void run() {
 			try {
+				String messageString = new String(message); 
+				//saveTransaction(senderId, targetId, messageString, clientOrderId); 
 				ClientAttachment clientAttachment = markets.get(targetId);
 				System.out.println(clientAttachment);
 				if (clientAttachment != null && clientAttachment.client != null) {
@@ -346,7 +371,8 @@ public class Router {
 		@Override
 		public void run() {
 			try {
-				//System.out.println("message is : " + message);
+				String messageString = new String(message); 
+				//saveTransaction(senderId, targetId, messageString, null);
 				ClientAttachment clientAttachment = brokers.get(targetId);
 				if (clientAttachment != null && clientAttachment.client != null) {
 					clientAttachment.client.write(ByteBuffer.wrap(message)).get(); // get from the Future object This effectively makes the asynchronous operation behave synchronously, as it blocks until the write operation is complete.
