@@ -68,7 +68,5 @@ The Chain-of-Responsibility pattern is a behavioral design pattern that allows a
 
 In the Router module, the Chain-of-Responsibility pattern is utilized to manage message processing. The Router class contains multiple message handlers, each responsible for processing specific types of messages. When a message is received, it is passed through the chain of handlers, allowing each handler to either process the message or pass it to the next handler in the chain. This design allows for flexible and extensible message handling, making it easy to add new message types or modify existing handlers without affecting the overall system.
 
-## How to Run the Application
-To run the application, execute the `Main` class. Ensure that the necessary dependencies are included in your project.
 
 
