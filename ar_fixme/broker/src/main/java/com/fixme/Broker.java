@@ -125,6 +125,8 @@ public class Broker {
 			}
 			else {
 				orderSide = "";
+				System.out.println(RED + "Order side is incorrect." + RESET);
+				return;
 			}
 			fixMessage = MessageFactory.formMessage(brokerId, targetId, orderSide, symbol, quantity, price);
 			System.out.println("FIX message created:\n" + fixMessage.getStringMessage());
