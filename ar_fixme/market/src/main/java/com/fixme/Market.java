@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
@@ -20,9 +21,16 @@ public class Market {
 	private double basePrice = 100.00;
 	private HashMap<String, Integer> Stock;
 
-	Market() {
+	String RESET = "\u001B[0m";
+	String RED = "\u001B[31m";
+	String GREEN = "\u001B[32m";
+	String YELLOW = "\u001B[33m";
+	String BLUE = "\u001B[34m";
+
+	Market(double basePrices) {
 		Stock = new HashMap<String, Integer>();
 		int stockSelector;
+		this.basePrice = basePrices;
 
 		for (int i = 0; i < 4; i++) {
 			stockSelector = ThreadLocalRandom.current().nextInt(0, 4);
@@ -31,7 +39,8 @@ public class Market {
 			else
 				i--;
 		}
-		System.out.println(Stock);
+		//System.out.println("available stock is: " + Stock);
+		printStockPrices();
 	}
 
 	void start() throws IOException, ExecutionException, InterruptedException {
@@ -100,7 +109,7 @@ public class Market {
 
 				if (resCode == 420) {
 					FixMessage responseFixMessage = MessageFactory.successMessage(Market.marketId, senderId, clientOrderId);
-					System.out.println("Order successfully processed. The reply message is: \n" + responseFixMessage.getStringMessage());
+					System.out.println(GREEN + "Order successfully processed. The reply message is: \n" + responseFixMessage.getStringMessage() + RESET);
 					client.write(ByteBuffer.wrap(responseFixMessage.getRawMessage())).get();
 					return;
 				} else {
@@ -115,7 +124,7 @@ public class Market {
 
 				if (resCode == 420) {
 					FixMessage responseFixMessage = MessageFactory.successMessage(Market.marketId, senderId, clientOrderId);
-					System.out.println("Order successfully processed. The reply message is: \n" + responseFixMessage.getStringMessage());
+					System.out.println(GREEN + "Order successfully processed. The reply message is: \n" + responseFixMessage.getStringMessage() + RESET);
 					client.write(ByteBuffer.wrap(responseFixMessage.getRawMessage())).get();
 					return;
 				} else {
@@ -129,15 +138,16 @@ public class Market {
 
 	int marketOperations(HashMap<String, Integer> stock, String instrument, int quantity, double price, String buyOrSell) {
 		//System.out.println("in market operations   ->" + buyOrSell);
-		double maxPrice = basePrice * 50.00;
+		double maxPrice = basePrice * 4.00;
 		double minPrice = basePrice / 4.00;
 		double marketPrice;
+		//System.out.println("min price is: " + minPrice + " max price is:  " + maxPrice);
 		if (stock.containsKey(instrument)) {
 			if (buyOrSell.toLowerCase() == "buy") {
 				if (stock.get(instrument) <= 0)
 					return 504;
-				//marketPrice = this.basePrice * (50.00 / stock.get(instrument));
-				marketPrice = basePrice;
+				marketPrice = this.basePrice * (50.00 / stock.get(instrument));
+				//marketPrice = basePrice;
 				if (marketPrice < minPrice)
 					marketPrice = minPrice;
 				if (stock.get(instrument) < quantity)
@@ -152,19 +162,25 @@ public class Market {
 					return 420;
 				}
 			} else if (buyOrSell.toLowerCase() == "sell") {
-				if (stock.get(instrument) <= 0)
+				if (stock.get(instrument) <= 0) {
 					marketPrice = maxPrice;
-				else
-					marketPrice = this.basePrice * (50 / stock.get(instrument));
-				if (marketPrice < minPrice)
-					return 505;
-				if (quantity + stock.get(instrument) > 200)
+				} else {
+					marketPrice = basePrice * (50.0 / stock.get(instrument));
+				}
+				//System.out.println(BLUE + marketPrice + " " + stock.get(instrument) + RESET);
+				//if (marketPrice < minPrice)
+				// if (price < minPrice)
+				// 	return 505;
+				// if (quantity + stock.get(instrument) > 200)
+				// 	return 506;
+				// if (price < 0.8 * marketPrice || price < minPrice)
+				// 	return 601;
+				// else if (price > 1.1 * marketPrice || price > maxPrice)
+				// 	return 602;
+				if (price > marketPrice) {
+					System.out.println(YELLOW + "offered price " + price + " is higher than " + marketPrice + RESET);
 					return 506;
-				if (price < 0.8 * marketPrice || price < minPrice)
-					return 601;
-				else if (price > 1.1 * marketPrice || price > maxPrice)
-					return 602;
-				else {
+				} else {
 					stock.put(instrument, (stock.get(instrument) + quantity));
 					this.Stock = stock;
 					return 420;
@@ -180,27 +196,27 @@ public class Market {
 		try {
 			if (resCode == 404) {
 				FixMessage rejectMessage = MessageFactory.rejectionMessage(Market.marketId, senderId, clientOrderId, "Market #" + Market.marketId + " doesn't have this instrument");
-				System.out.println("Order rejected. The reply message is: \n" + rejectMessage.getStringMessage());
+				System.out.println(RED + "Order rejected. The reply message is: \n" + rejectMessage.getStringMessage() + RESET);
 				client.write(ByteBuffer.wrap(rejectMessage.getRawMessage())).get();
 				return;
 			} else if (resCode == 504) {
 				FixMessage rejectMessage = MessageFactory.rejectionMessage(Market.marketId, senderId, clientOrderId, "Market #" + Market.marketId + " doesn't have enough amount from this instrument");
-				System.out.println("Order rejected. The reply message is: \n" + rejectMessage.getStringMessage());
+				System.out.println(RED + "Order rejected. The reply message is: \n" + rejectMessage.getStringMessage() + RESET);
 				client.write(ByteBuffer.wrap(rejectMessage.getRawMessage())).get();
 				return;
 			} else if (resCode == 505) {
 				FixMessage rejectMessage = MessageFactory.rejectionMessage(Market.marketId, senderId, clientOrderId, "Market #" + Market.marketId + " doesn't accept this instrument anymore");
-				System.out.println("Order rejected. The reply message is: \n" + rejectMessage.getStringMessage());
+				System.out.println(RED + "Order rejected. The reply message is: \n" + rejectMessage.getStringMessage() + RESET);
 				client.write(ByteBuffer.wrap(rejectMessage.getRawMessage())).get();
 				return;
 			} else if (resCode == 506) {
 				FixMessage rejectMessage = MessageFactory.rejectionMessage(Market.marketId, senderId, clientOrderId, "Market #" + Market.marketId + " will not buy this order");
-				System.out.println("Order rejected. The reply message is: \n" + rejectMessage.getStringMessage());
+				System.out.println(RED + "Order rejected. The reply message is: \n" + rejectMessage.getStringMessage() + RESET);
 				client.write(ByteBuffer.wrap(rejectMessage.getRawMessage())).get();
 				return;
 			} else if (resCode == -1) {
 				FixMessage rejectMessage = MessageFactory.rejectionMessage(Market.marketId, senderId, clientOrderId, "Error in performing request to Market #" + Market.marketId);
-				System.out.println("Order rejected. The reply message is: \n" + rejectMessage.getStringMessage());
+				System.out.println(RED + "Order rejected. The reply message is: \n" + rejectMessage.getStringMessage() + RESET);
 				client.write(ByteBuffer.wrap(rejectMessage.getRawMessage())).get();
 				return;
 			} else
@@ -209,6 +225,16 @@ public class Market {
 			System.out.println("There was an error building the FIX message: " + e.getMessage());
 		}
 	}
+
+	public void printStockPrices() {
+        System.out.println(BLUE + "Available Stock: " + RESET);
+		for (Map.Entry<String, Integer> entry : Stock.entrySet()) {
+            String stockName = entry.getKey();
+            int stockValue = entry.getValue();
+            double calculatedPrice = basePrice * (50.00 / stockValue);
+            System.out.println(BLUE + stockName + ", Calculated Price: " + calculatedPrice + RESET);
+        }
+    }
 
 	void priceReject(int resCode, String senderId, String clientOrderId) throws ExecutionException, InterruptedException {
 		try {

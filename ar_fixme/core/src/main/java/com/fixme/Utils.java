@@ -32,9 +32,9 @@ public class Utils {
 		int checksumValue = Integer.parseInt(checksumStr);
 		String strippedMessage = message.substring(0, checksumIndex + 1);
 		byte[] strippedBytes = insertSOHDelimiter(strippedMessage.getBytes());
-		System.out.println(checksumValue + " ----- " + strippedMessage + " ---- ");
+		//System.out.println(checksumValue + " ----- " + strippedMessage + " ---- ");
 		strippedMessage = FixMessage.makeChecksum(strippedBytes);
-		System.out.println(strippedMessage);
+		//System.out.println(strippedMessage);
 		if (checksumValue == Integer.parseInt(strippedMessage))
 			return;
 		else

@@ -130,6 +130,7 @@ public class Router {
 			Utils.validateChecksum(fixMessage.getStringMessage());
 			String senderId = fixMessage.messagMap.get("49");
 			String targetId = fixMessage.messagMap.get("56");
+			System.out.println("Message sent to broker " + targetId + " from " + senderId);
 			pool.execute(new SendToBroker(message, senderId, targetId));
 		} catch (FixCheckSumException e) {
 			System.err.println(e.getMessage());
@@ -148,6 +149,7 @@ public class Router {
 			String targetId = fixMessage.messagMap.get("56");
 			String clientOrderId = fixMessage.messagMap.get("11");
 			//System.out.println(message + " --- " + senderId + " " + targetId + " " + clientOrderId);
+			System.out.println("Message sent to market " + targetId + " from " + senderId);
 			pool.execute(new SendToMarket(message, senderId, targetId, clientOrderId));
 		} catch (FixCheckSumException e) {
 			System.err.println("Error! checksum failed" + e.getMessage());
@@ -335,7 +337,7 @@ public class Router {
 				String messageString = new String(message); 
 				//saveTransaction(senderId, targetId, messageString, clientOrderId); 
 				ClientAttachment clientAttachment = markets.get(targetId);
-				System.out.println(clientAttachment);
+				//System.out.println(clientAttachment);
 				if (clientAttachment != null && clientAttachment.client != null) {
 					clientAttachment.client.write(ByteBuffer.wrap(message)).get();
 					//clientAttachment.client.write(ByteBuffer.wrap("now get this".getBytes())).get();
