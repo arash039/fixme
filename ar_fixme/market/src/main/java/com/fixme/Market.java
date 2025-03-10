@@ -138,7 +138,7 @@ public class Market {
 
 	int marketOperations(HashMap<String, Integer> stock, String instrument, int quantity, double price, String buyOrSell) {
 		//System.out.println("in market operations   ->" + buyOrSell);
-		double maxPrice = basePrice * 4.00;
+		double maxPrice = basePrice * 6.00;
 		double minPrice = basePrice / 4.00;
 		double marketPrice;
 		//System.out.println("min price is: " + minPrice + " max price is:  " + maxPrice);
@@ -227,14 +227,18 @@ public class Market {
 	}
 
 	public void printStockPrices() {
-        System.out.println(BLUE + "Available Stock: " + RESET);
+		System.out.println(BLUE + "Available Stock: " + RESET);
 		for (Map.Entry<String, Integer> entry : Stock.entrySet()) {
-            String stockName = entry.getKey();
-            int stockValue = entry.getValue();
-            double calculatedPrice = basePrice * (50.00 / stockValue);
-            System.out.println(BLUE + stockName + ", Calculated Price: " + calculatedPrice + RESET);
-        }
-    }
+			String stockName = entry.getKey();
+			int stockValue = entry.getValue();
+			double calculatedPrice;
+			if (stockValue != 0)
+				calculatedPrice = basePrice * (50.00 / stockValue);
+			else
+				calculatedPrice = basePrice * 6.00;
+			System.out.println(BLUE + stockName + " - Available Amount: " + stockValue + " - Calculated Price: " + calculatedPrice + RESET);
+		}
+	}
 
 	void priceReject(int resCode, String senderId, String clientOrderId) throws ExecutionException, InterruptedException {
 		try {

@@ -132,7 +132,7 @@ public class Broker {
 			System.out.println("FIX message created:\n" + fixMessage.getStringMessage());
 			client.write(ByteBuffer.wrap(fixMessage.getRawMessage())).get();
 		} else {
-			System.out.println(RED + "Message format is incorrect." + RESET);
+			System.out.println(RED + "Message format is incorrect. You can use help for correct message format" + RESET);
 		}
 	}
 
