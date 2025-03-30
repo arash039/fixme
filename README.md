@@ -3,6 +3,7 @@
 ## Introduction
 This project implements a FIX protocol router that facilitates communication between brokers and markets. It consists of three main modules: Broker, Market, and Router.
 
+```mermaid
 flowchart TD
     %% Non-blocking I/O Annotation
     Note["Note: Uses Non-Blocking I/O (AsynchronousSocketChannel/AsynchronousServerSocketChannel)"]:::core
@@ -81,14 +82,8 @@ flowchart TD
     click CFix2 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/FixCheckSumException.java"
     click CFix3 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/FixFormatException.java"
     click CFix4 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/FixMessageException.java"
-    click CFix5 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/MessageFactory.java"
-    click CFix6 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/Utils.java"
-
-    %% Styles
-    classDef client fill:#aaddff,stroke:#333,stroke-width:2px;
-    classDef hub fill:#aaffaa,stroke:#333,stroke-width:2px;
-    classDef core fill:#ffdd99,stroke:#333,stroke-width:2px;
-    classDef chain fill:#ffff99,stroke:#333,stroke-width:2px;
+    click CFix5 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main
+```
 ## FIX Messages
 
 FIX (Financial Information eXchange) messages are standardized messages used for electronic communication in the financial services industry. They facilitate the exchange of information related to securities transactions, including orders, executions, and confirmations.
