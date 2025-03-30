@@ -3,6 +3,92 @@
 ## Introduction
 This project implements a FIX protocol router that facilitates communication between brokers and markets. It consists of three main modules: Broker, Market, and Router.
 
+flowchart TD
+    %% Non-blocking I/O Annotation
+    Note["Note: Uses Non-Blocking I/O (AsynchronousSocketChannel/AsynchronousServerSocketChannel)"]:::core
+
+    %% Broker Module Subgraph
+    subgraph "Broker Module"
+        B1["Broker.java"]:::client
+        B2["Main.java"]:::client
+    end
+
+    %% Market Module Subgraph
+    subgraph "Market Module"
+        M1["Market.java"]:::client
+        M2["Main.java"]:::client
+    end
+
+    %% Router Module Subgraph
+    subgraph "Router Module"
+        R1["Router.java"]:::hub
+        R2["ClientAttachment.java"]:::hub
+        R3["Main.java"]:::hub
+        
+        %% Chain-of-Responsibility sub-diagram
+        subgraph "Chain-of-Responsibility"
+            C1["Handler 1"]:::chain
+            C2["Handler 2"]:::chain
+            C3["Handler 3"]:::chain
+        end
+        R1 -->|"initiates"| C1
+        C1 -->|"passes to"| C2
+        C2 -->|"passes to"| C3
+    end
+
+    %% Core Module Subgraph
+    subgraph "Core Module"
+        CFix1["FixMessage.java"]:::core
+        CFix2["FixCheckSumException.java"]:::core
+        CFix3["FixFormatException.java"]:::core
+        CFix4["FixMessageException.java"]:::core
+        CFix5["MessageFactory.java"]:::core
+        CFix6["Utils.java"]:::core
+    end
+
+    %% Inter-module Relationships
+    B1 -->|"sendFIXMsg"| R1
+    M1 -->|"sendFIXMsg"| R1
+
+    R1 -->|"routeResponse"| B1
+    R1 -->|"routeResponse"| M1
+
+    %% Core dependencies
+    B2 -->|"usesFIXUtils"| CFix1
+    M2 -->|"usesFIXUtils"| CFix1
+    R3 -->|"usesFIXUtils"| CFix1
+
+    %% Position the Note at the top
+    Note --- B2
+    Note --- M2
+    Note --- R3
+
+    %% Click Events for Broker Module
+    click B1 "https://github.com/arash039/fixme/blob/main/ar_fixme/broker/src/main/java/com/fixme/Broker.java"
+    click B2 "https://github.com/arash039/fixme/blob/main/ar_fixme/broker/src/main/java/com/fixme/Main.java"
+
+    %% Click Events for Market Module
+    click M1 "https://github.com/arash039/fixme/blob/main/ar_fixme/market/src/main/java/com/fixme/Market.java"
+    click M2 "https://github.com/arash039/fixme/blob/main/ar_fixme/market/src/main/java/com/fixme/Main.java"
+
+    %% Click Events for Router Module
+    click R1 "https://github.com/arash039/fixme/blob/main/ar_fixme/router/src/main/java/com/fixme/Router.java"
+    click R2 "https://github.com/arash039/fixme/blob/main/ar_fixme/router/src/main/java/com/fixme/ClientAttachment.java"
+    click R3 "https://github.com/arash039/fixme/blob/main/ar_fixme/router/src/main/java/com/fixme/Main.java"
+
+    %% Click Events for Core Module
+    click CFix1 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/FixMessage.java"
+    click CFix2 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/FixCheckSumException.java"
+    click CFix3 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/FixFormatException.java"
+    click CFix4 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/FixMessageException.java"
+    click CFix5 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/MessageFactory.java"
+    click CFix6 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/Utils.java"
+
+    %% Styles
+    classDef client fill:#aaddff,stroke:#333,stroke-width:2px;
+    classDef hub fill:#aaffaa,stroke:#333,stroke-width:2px;
+    classDef core fill:#ffdd99,stroke:#333,stroke-width:2px;
+    classDef chain fill:#ffff99,stroke:#333,stroke-width:2px;
 ## FIX Messages
 
 FIX (Financial Information eXchange) messages are standardized messages used for electronic communication in the financial services industry. They facilitate the exchange of information related to securities transactions, including orders, executions, and confirmations.
