@@ -3,6 +3,8 @@
 ## Introduction
 This project implements a FIX protocol router that facilitates communication between brokers and markets. It consists of three main modules: Broker, Market, and Router.
 
+## System Architecture
+
 ```mermaid
 flowchart TD
     %% Non-blocking I/O Annotation
@@ -82,7 +84,9 @@ flowchart TD
     click CFix2 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/FixCheckSumException.java"
     click CFix3 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/FixFormatException.java"
     click CFix4 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/FixMessageException.java"
-    click CFix5 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main
+    click CFix5 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/MessageFactory.java"
+    click CFix6 "https://github.com/arash039/fixme/blob/main/ar_fixme/core/src/main/java/com/fixme/Utils.java"
+
 ```
 ## FIX Messages
 
